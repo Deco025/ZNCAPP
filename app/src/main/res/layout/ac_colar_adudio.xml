@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:background="@color/user"
+    android:layout_height="match_parent">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <SeekBar
+            android:id="@+id/bar_red"
+            android:layout_width="345dp"
+            android:layout_height="50dp"
+            android:layout_marginTop="32dp"
+            android:max="255"
+            android:maxHeight="10dp"
+            android:minHeight="10dp"
+            android:paddingLeft="12dp"
+            android:paddingTop="3dp"
+            android:paddingRight="12dp"
+            android:paddingBottom="3dp"
+            android:progress="200"
+            android:progressDrawable="@drawable/layer_progress1"
+            android:thumb="@drawable/shape_circle1"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <SeekBar
+            android:id="@+id/bar_yellow"
+            android:layout_width="345dp"
+            android:layout_height="50dp"
+            android:layout_marginTop="16dp"
+            android:max="255"
+            android:maxHeight="10dp"
+            android:minHeight="10dp"
+            android:paddingLeft="12dp"
+            android:paddingTop="3dp"
+            android:paddingRight="12dp"
+            android:paddingBottom="3dp"
+            android:progress="200"
+            android:progressDrawable="@drawable/layer_progress2"
+            android:thumb="@drawable/shape_circle2"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/bar_red" />
+
+        <TextView
+            android:id="@+id/tx_red"
+            android:layout_width="wrap_content"
+            android:layout_height="50dp"
+            android:layout_alignParentRight="true"
+
+            android:layout_marginTop="32dp"
+            android:gravity="left"
+            android:padding="6dp"
+            android:text="000"
+            android:textColor="#E91E63"
+            android:textSize="30dp"
+            app:layout_constraintBottom_toBottomOf="@+id/bar_red"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tx_yellow"
+            android:layout_width="wrap_content"
+            android:layout_height="50dp"
+            android:layout_alignParentRight="true"
+            android:layout_marginTop="16dp"
+            android:gravity="left"
+            android:padding="6dp"
+            android:text="000"
+            android:textColor="#FFEB3B"
+            android:textSize="30dp"
+            app:layout_constraintBottom_toBottomOf="@+id/bar_yellow"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toEndOf="@+id/bar_yellow"
+            app:layout_constraintTop_toBottomOf="@+id/tx_red" />
+
+        <LinearLayout
+            android:id="@+id/linearLayout3"
+            android:layout_width="414dp"
+            android:layout_height="169dp"
+            app:layout_constraintBottom_toTopOf="@+id/guideline3"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent">
+
+            <Button
+                android:id="@+id/colar_RED"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="红"
+                android:textSize="60dp" />
+
+            <Button
+                android:id="@+id/colar_Yellow"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="黄"
+                android:textSize="60dp" />
+
+            <Button
+                android:id="@+id/colar_Bao"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="堡"
+                android:textSize="60dp" />
+            <Button
+                android:id="@+id/colar_Zi"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="紫"
+                android:textSize="60dp" />
+
+        </LinearLayout>
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_begin="410dp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/linearLayout3">
+
+            <EditText
+                android:id="@+id/Tv_Colar_Set"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="6"
+                android:gravity="clip_horizontal|center_horizontal"
+                android:maxLines="1"
+                android:text="185"
+                android:textSize="30dp" />
+
+            <Button
+                android:id="@+id/Set_P"
+                android:text="-"
+                android:textSize="40dp"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="2" />
+
+            <Button
+                android:id="@+id/Set_D"
+                android:text="+"
+                android:textSize="40dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="2" />
+        </LinearLayout>
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+    <!-- 其他布局内容 -->
+</FrameLayout>

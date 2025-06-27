@@ -38,6 +38,12 @@ fun ColorScreen(viewModel: MainViewModel) {
             onValueChange = { viewModel.onColorSliderChanged(1, it) },
             color = Color.Yellow
         )
+        ColorSlider(
+            label = "Blue",
+            value = colorState.sliders[2],
+            onValueChange = { viewModel.onColorSliderChanged(2, it) },
+            color = Color.Blue
+        )
 
         // Mode Buttons
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {

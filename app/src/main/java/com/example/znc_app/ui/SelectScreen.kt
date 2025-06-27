@@ -122,7 +122,7 @@ fun GridButton(
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed by interactionSource.collectIsPressedAsState()
 
-    val scale by 768animateFloatAsState(if (isPressed) 0.9f else 1.0f)
+    val scale by animateFloatAsState(if (isPressed) 0.9f else 1.0f)
     val color by animateColorAsState(
         if (isSelected) com.example.znc_app.ui.theme.ButtonGreen else MaterialTheme.colorScheme.surfaceVariant
     )

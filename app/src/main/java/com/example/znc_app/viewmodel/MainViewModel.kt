@@ -39,6 +39,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private var timeoutTimer: Timer? = null
     private var lastReceivedTime: Long = 0
     private var sendCnt = 0
+    private var lastSentTime: Long = 0
 
     private val _uiState = MutableStateFlow(UiState())
     val uiState: StateFlow<UiState> = _uiState.asStateFlow()
@@ -151,6 +152,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     // --- Network Data Handling & Timers ---
     private fun handleReceivedData(data: IntArray) {
+        val delay = System.currentTimeMillis() - lastSentTime
+        _uiState.update { it.copy(delay = "${delay}ms") }
         lastReceivedTime = System.currentTimeMillis()
         if (data.size == 11 && data[0] == 0xAA.toInt() && data[1] == 0x55.toInt()) {
             val serverButtons = data.slice(3..6)
@@ -207,6 +210,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         command[9] = colorDataBytes[2]
         command[10] = colorState.activeMode.toByte()
 
+        lastSentTime = System.currentTimeMillis()
         tcpRepository.sendData(command)
     }
 

@@ -2,21 +2,12 @@ package com.example.znc_app.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-// Old App Colors
-val AppBlue = Color(0xFF254D65)
-val ButtonGray = Color(0xFF5A595B)
-val ButtonGreen = Color(0xFF6BBB6D)
-val AccentRed = Color(0xFFE91E63)
-val AccentYellow = Color(0xFFFFEB3B)
-
-// New Theme Colors (Light)
-val LightPrimary = AppBlue
-val LightOnPrimary = Color.White
-val LightSecondary = Color(0xFF81AABF)
-val LightSurfaceVariant = ButtonGray
-
-// New Theme Colors (Dark)
-val DarkPrimary = Color(0xFF5F91A8)
-val DarkOnPrimary = Color.Black
-val DarkSecondary = Color(0xFFB0C9D7)
-val DarkSurfaceVariant = ButtonGray
+// Professional Theme Colors (Dark Only)
+val DarkBackground = Color(0xFF121212) // A deep, neutral dark gray
+val DarkSurface = Color(0xFF1E1E1E)    // A slightly lighter gray for surfaces like cards
+val PrimaryGreen = Color(0xFF4CAF50)   // A vibrant, modern green for primary actions
+val PrimaryGreenVariant = Color(0xFF388E3C) // A darker variant for things like pressed states
+val OnPrimaryColor = Color.White         // Text/icons on primary color
+val OnSurfaceColor = Color(0xFFE0E0E0)    // Main text color on dark backgrounds
+val OnSurfaceVariant = Color(0xFFBDBDBD)  // Secondary or disabled text color
+val SelectedGreen = Color(0x334CAF50)      // A translucent green for selected states

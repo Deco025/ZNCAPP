@@ -50,6 +50,12 @@ android {
 }
 
 dependencies {
+    constraints {
+        implementation("androidx.compose.material3:material3:1.2.1")
+        implementation("androidx.compose.material:material-icons-extended:1.6.3")
+        // Add other compose libraries here if needed to enforce versions
+    }
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -58,7 +64,8 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
-implementation(libs.androidx.foundation)
+    implementation(libs.androidx.material.icons.extended)
+    implementation(libs.androidx.foundation)
     implementation(libs.androidx.constraintlayout)
     implementation(libs.androidx.viewpager2)
     implementation(libs.androidx.appcompat)

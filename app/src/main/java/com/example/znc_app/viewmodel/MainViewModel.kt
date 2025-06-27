@@ -217,6 +217,10 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         timeoutTimer = null
     }
 
+    private fun disconnect() {
+        tcpRepository.disconnect()
+    }
+
     override fun onCleared() {
         super.onCleared()
         disconnect()

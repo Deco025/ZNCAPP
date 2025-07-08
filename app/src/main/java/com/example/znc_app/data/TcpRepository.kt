@@ -88,9 +88,41 @@ class TcpRepository(context: Context) {
         return states
     }
 
+    fun saveColorModes(modes: List<List<Float>>) {
+        val serialized = modes.joinToString(";") { list ->
+            list.joinToString(",")
+        }
+        sharedPreferences.edit().putString(KEY_COLOR_MODES, serialized).apply()
+    }
+
+    fun loadColorModes(): List<List<Float>> {
+        val serialized = sharedPreferences.getString(KEY_COLOR_MODES, null)
+        if (serialized == null) {
+            return getDefaultColorModes()
+        }
+        return try {
+            serialized.split(';').map { group ->
+                group.split(',').map { it.toFloat() }
+            }
+        } catch (e: Exception) {
+            Log.e("TcpRepository", "Failed to parse color modes", e)
+            getDefaultColorModes()
+        }
+    }
+
+    private fun getDefaultColorModes(): List<List<Float>> {
+        return listOf(
+            listOf(1f, 0f, 0f, 1f), // Red
+            listOf(0f, 1f, 0f, 1f), // Green
+            listOf(0f, 0f, 1f, 1f), // Blue
+            listOf(1f, 1f, 1f, 1f)  // White
+        )
+    }
+
     companion object {
         private const val PREFS_NAME = "MyPrefs"
         private const val LAST_IP = "last_ip"
+        private const val KEY_COLOR_MODES = "key_color_modes"
     }
 }
 

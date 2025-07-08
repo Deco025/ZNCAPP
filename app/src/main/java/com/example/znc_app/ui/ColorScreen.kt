@@ -6,6 +6,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Remove
+import androidx.compose.material.icons.filled.Save
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -35,7 +36,8 @@ fun ColorScreen(viewModel: MainViewModel) {
         )
         ModeSelectionSection(
             colorState = colorState,
-            onModeSelect = { viewModel.onColorModeSelected(it) }
+            onModeSelect = { viewModel.onColorModeSelected(it) },
+            onSave = { viewModel.saveColorModes() }
         )
         ManualInputSection(
             colorState = colorState,
@@ -47,19 +49,30 @@ fun ColorScreen(viewModel: MainViewModel) {
 }
 
 @Composable
-private fun SectionCard(title: String, content: @Composable ColumnScope.() -> Unit) {
+private fun SectionCard(
+    title: String,
+    actions: @Composable RowScope.() -> Unit = {},
+    content: @Composable ColumnScope.() -> Unit
+) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = MaterialTheme.shapes.large,
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
-            Text(
-                text = title,
-                style = MaterialTheme.typography.titleLarge,
-                color = MaterialTheme.colorScheme.onSurface,
-                modifier = Modifier.padding(bottom = 12.dp)
-            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = title,
+                    style = MaterialTheme.typography.titleLarge,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+                actions()
+            }
+            Spacer(modifier = Modifier.height(12.dp))
             content()
         }
     }
@@ -83,8 +96,19 @@ private fun ColorSlidersSection(colorState: ColorScreenState, onSliderChange: (I
 }
 
 @Composable
-private fun ModeSelectionSection(colorState: ColorScreenState, onModeSelect: (Int) -> Unit) {
-    SectionCard(title = "掩码画面") {
+private fun ModeSelectionSection(
+    colorState: ColorScreenState,
+    onModeSelect: (Int) -> Unit,
+    onSave: () -> Unit
+) {
+    SectionCard(
+        title = "掩码画面",
+        actions = {
+            IconButton(onClick = onSave) {
+                Icon(Icons.Default.Save, contentDescription = "保存颜色方案")
+            }
+        }
+    ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(8.dp)

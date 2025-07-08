@@ -38,9 +38,11 @@ fun SelectScreen(viewModel: MainViewModel) {
     ) {
         ConnectionBar(
             uiState = uiState,
-            onIpChange = { viewModel.onIpAddressChanged(it) }
+            onIpSegmentChanged = viewModel::onIpSegmentChanged,
+            onConnectClick = viewModel::onConnectButtonClicked,
+            connectionState = uiState.connectionState
         )
-
+        Spacer(modifier = Modifier.height(32.dp)) // 增加间距
         ButtonGrid(
             selectedButtons = uiState.selectedButtons,
             onButtonClick = { col, row ->
@@ -54,34 +56,41 @@ fun SelectScreen(viewModel: MainViewModel) {
 @Composable
 fun ConnectionBar(
     uiState: UiState,
-    onIpChange: (String) -> Unit
+    onIpSegmentChanged: (Int, String) -> Unit,
+    onConnectClick: () -> Unit,
+    connectionState: ConnectionState
 ) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = MaterialTheme.shapes.large,
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 12.dp)
+                .padding(horizontal = 16.dp, vertical = 8.dp)
         ) {
             Column(modifier = Modifier.weight(1f)) {
-                BasicTextField(
-                    value = uiState.ipAddress,
-                    onValueChange = onIpChange,
-                    textStyle = MaterialTheme.typography.bodyLarge.copy(color = MaterialTheme.colorScheme.onSurface),
-                    cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
-                    singleLine = true
+                IpAddressInput(
+                    ipSegments = uiState.ipSegments,
+                    onSegmentChange = onIpSegmentChanged // 直接传递函数引用
                 )
-                Spacer(Modifier.height(4.dp))
+                Spacer(modifier = Modifier.height(4.dp))
                 Text(
                     text = uiState.delay,
-                    style = MaterialTheme.typography.labelMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    style = MaterialTheme.typography.labelMedium, // 使用 labelMedium 样式
+                    color = MaterialTheme.colorScheme.onSurfaceVariant, // 使用 onSurfaceVariant 颜色
+                    modifier = Modifier
+                        .align(Alignment.Start) // 左对齐
+                        .padding(start = 8.dp)   // 左侧内边距
                 )
             }
+            Spacer(modifier = Modifier.width(12.dp))
+            Spacer(modifier = Modifier.width(12.dp))
+            // 在 Button 右侧添加状态指示灯
+            StatusIndicator(connectionState = uiState.connectionState)
         }
     }
 }

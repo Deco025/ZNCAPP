@@ -24,11 +24,11 @@ data class ColorScreenState(
 )
 
 data class UiState(
-    val ipAddress: String = "192.168.1.1",
+    val ipSegments: List<String> = listOf("192", "168", "1", "105"),
     val connectionState: ConnectionState = ConnectionState.Disconnected,
     val selectedButtons: List<Int> = listOf(0, 0, 0, 0), // 每列选中的行号 (0表示未选)
     val colorState: ColorScreenState = ColorScreenState(),
-    val delay: String = "---ms",
+    val delay: String = "-- ms",
     val isBusy: Boolean = false // State lock for connect/disconnect
 )
 
@@ -44,10 +44,20 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private val _uiState = MutableStateFlow(UiState())
     val uiState: StateFlow<UiState> = _uiState.asStateFlow()
 
+    val ipAddress: String
+        get() = uiState.value.ipSegments.joinToString(".")
+
     init {
         val initialIp = tcpRepository.getLastIp()
         val initialButtons = tcpRepository.readButtonState().toList()
-        _uiState.update { it.copy(ipAddress = initialIp, selectedButtons = initialButtons) }
+        val initialColorModes = tcpRepository.loadColorModes()
+        _uiState.update {
+            it.copy(
+                ipSegments = initialIp.split('.').take(4).map { segment -> segment.trim() },
+                selectedButtons = initialButtons,
+                colorState = it.colorState.copy(modeValues = initialColorModes)
+            )
+        }
 
         viewModelScope.launch {
             tcpRepository.receivedData.collect { data ->
@@ -70,8 +80,16 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    fun onIpAddressChanged(newIp: String) {
-        _uiState.update { it.copy(ipAddress = newIp) }
+    fun onIpSegmentChanged(index: Int, value: String) {
+        if (index in 0..3) {
+            // Allow empty string for clearing the field, otherwise validate
+            val sanitizedValue = value.filter { it.isDigit() }
+            if (sanitizedValue.isEmpty() || (sanitizedValue.toIntOrNull() ?: 256) <= 255) {
+                val newSegments = _uiState.value.ipSegments.toMutableList()
+                newSegments[index] = sanitizedValue
+                _uiState.update { it.copy(ipSegments = newSegments) }
+            }
+        }
     }
 
     fun onConnectButtonClicked() {
@@ -79,18 +97,20 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
         val currentState = _uiState.value.connectionState
         if (currentState is ConnectionState.Connected) {
-            _uiState.update { it.copy(isBusy = true) }
+            _uiState.update { it.copy(isBusy = true, delay = "-- ms") }
+            lastSentTime = 0
             tcpRepository.disconnect()
         } else {
             _uiState.update { it.copy(isBusy = true) }
-            val ip = _uiState.value.ipAddress
+            val ip = ipAddress
             val port = 45678
             Log.d("MainViewModel", "Attempting to connect to $ip:$port")
-            if (ip.isNotBlank()) {
+            // Basic validation for a complete IP address
+            if (ip.matches(Regex("(\\d{1,3}\\.){3}\\d{1,3}"))) {
                 tcpRepository.connect(ip, port)
                 tcpRepository.saveLastIp(ip)
             } else {
-                _uiState.update { it.copy(isBusy = false) } // Re-enable button if IP is blank
+                _uiState.update { it.copy(isBusy = false) } // Re-enable button if IP is invalid
             }
         }
     }
@@ -150,10 +170,17 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         onColorSliderChanged(colorState.activeSliderIndex, newValue)
     }
 
+    fun saveColorModes() {
+        tcpRepository.saveColorModes(uiState.value.colorState.modeValues)
+    }
+
     // --- Network Data Handling & Timers ---
     private fun handleReceivedData(data: IntArray) {
-        val delay = System.currentTimeMillis() - lastSentTime
-        _uiState.update { it.copy(delay = "${delay}ms") }
+        if (lastSentTime > 0) {
+            val delay = System.currentTimeMillis() - lastSentTime
+            _uiState.update { it.copy(delay = "${delay}ms") }
+            lastSentTime = 0 // Reset after calculating
+        }
         lastReceivedTime = System.currentTimeMillis()
         if (data.size == 11 && data[0] == 0xAA.toInt() && data[1] == 0x55.toInt()) {
             val serverButtons = data.slice(3..6)
@@ -223,6 +250,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     private fun disconnect() {
         tcpRepository.disconnect()
+        lastSentTime = 0
+        _uiState.update { it.copy(delay = "-- ms") }
     }
 
     override fun onCleared() {

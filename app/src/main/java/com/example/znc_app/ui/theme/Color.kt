@@ -11,3 +11,4 @@ val OnPrimaryColor = Color.White         // Text/icons on primary color
 val OnSurfaceColor = Color(0xFFE0E0E0)    // Main text color on dark backgrounds
 val OnSurfaceVariant = Color(0xFFBDBDBD)  // Secondary or disabled text color
 val SelectedGreen = Color(0x334CAF50)      // A translucent green for selected states
+val BrightBlue = Color(0xFF448AFF)

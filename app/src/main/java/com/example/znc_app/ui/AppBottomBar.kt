@@ -64,7 +64,6 @@ fun AppBottomBar(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                StatusIndicator(connectionState = uiState.connectionState)
                 Button(
                     onClick = onConnectClick,
                     enabled = !uiState.isBusy,

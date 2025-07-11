@@ -81,7 +81,7 @@ private fun SectionCard(
 @Composable
 private fun ColorSlidersSection(colorState: ColorScreenState, onSliderChange: (Int, Float) -> Unit) {
     SectionCard(title = "颜色调节") {
-        val sliderLabels = listOf("b*", "a*", "rec[9]")
+        val sliderLabels = listOf("b*", "a*", "全局速度", "拐弯速度")
         sliderLabels.forEachIndexed { index, label ->
             ColorSlider(
                 label = label,

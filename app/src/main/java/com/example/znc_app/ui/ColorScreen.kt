@@ -16,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.example.znc_app.ui.components.ActionButton
 import com.example.znc_app.viewmodel.ColorScreenState
 import com.example.znc_app.viewmodel.MainViewModel
 
@@ -45,6 +46,14 @@ fun ColorScreen(viewModel: MainViewModel) {
             onDecrement = { viewModel.onColorValueDecrement() },
             onIncrement = { viewModel.onColorValueIncrement() }
         )
+        SectionCard(title = "特殊动作") {
+            ActionButton(
+                isPressed = uiState.isActionButtonPressed,
+                onPress = viewModel::onActionButtonPressed,
+                onRelease = viewModel::onActionButtonReleased,
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
     }
 }
 

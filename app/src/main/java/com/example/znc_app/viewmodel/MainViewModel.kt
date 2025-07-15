@@ -8,8 +8,11 @@ import com.example.znc_app.data.ConnectionState
 import com.example.znc_app.data.CommandData
 import com.example.znc_app.data.TcpRepository
 import com.example.znc_app.data.UpdateParamsCommand
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.Job
@@ -33,8 +36,16 @@ data class UiState(
     val selectedButtons: List<Int> = listOf(0, 0, 0, 0), // 每列选中的行号 (0表示未选)
     val colorState: ColorScreenState = ColorScreenState(),
     val delay: String = "-- ms",
-    val isBusy: Boolean = false // State lock for connect/disconnect
+    val isBusy: Boolean = false, // State lock for connect/disconnect
+    val isActionButtonPressed: Boolean = false
 )
+
+/**
+ * Represents one-time events sent from the ViewModel to the UI.
+ */
+sealed class ViewEvent {
+    data object Vibrate : ViewEvent()
+}
 
 class MainViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -46,6 +57,9 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     
     private val _uiState = MutableStateFlow(UiState())
     val uiState: StateFlow<UiState> = _uiState.asStateFlow()
+
+    private val _events = MutableSharedFlow<ViewEvent>()
+    val events: SharedFlow<ViewEvent> = _events.asSharedFlow()
 
     val ipAddress: String
         get() = uiState.value.ipSegments.joinToString(".")
@@ -181,6 +195,17 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         tcpRepository.saveColorModes(uiState.value.colorState.modeValues)
     }
 
+    fun onActionButtonPressed() {
+        _uiState.update { it.copy(isActionButtonPressed = true) }
+        viewModelScope.launch {
+            _events.emit(ViewEvent.Vibrate)
+        }
+    }
+
+    fun onActionButtonReleased() {
+        _uiState.update { it.copy(isActionButtonPressed = false) }
+    }
+
     // --- Network Data Handling & Timers ---
     private fun handleReceivedData(jsonString: String) {
         if (jsonString.isBlank()) return
@@ -245,6 +270,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             globalSpeed = sliders.getOrElse(2) { 0f }.toInt(),
             turnSpeed = sliders.getOrElse(3) { 0f }.toInt(),
             imageMode = colorState.activeMode,
+            actionButtonHold = if (currentState.isActionButtonPressed) 1 else 0,
             networkDelay = currentState.delay.removeSuffix("ms").trim().toIntOrNull() ?: 0
         )
     

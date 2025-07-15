@@ -2,8 +2,11 @@ package com.example.znc_app
 
 import android.annotation.SuppressLint
 import android.app.Application
+import android.content.Context
 import android.os.Build
 import android.os.Bundle
+import android.os.VibrationEffect
+import android.os.Vibrator
 import android.view.View
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -15,16 +18,20 @@ import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.znc_app.ui.AppBottomBar
 import com.example.znc_app.ui.ColorScreen
 import com.example.znc_app.ui.SelectScreen
 import com.example.znc_app.ui.theme.Znc_appTheme
 import com.example.znc_app.viewmodel.MainViewModel
+import com.example.znc_app.viewmodel.ViewEvent
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 
@@ -44,6 +51,26 @@ class MainActivity : AppCompatActivity() {
 
         setContent {
             Znc_appTheme {
+                val context = LocalContext.current
+                val vibrator = context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+
+                // A more robust way to collect one-time events.
+                // The key is `true` so it runs once and is not tied to the ViewModel instance.
+                LaunchedEffect(true) {
+                    viewModel.events.collect { event ->
+                        when (event) {
+                            is ViewEvent.Vibrate -> {
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                                    vibrator.vibrate(VibrationEffect.createOneShot(50, VibrationEffect.DEFAULT_AMPLITUDE))
+                                } else {
+                                    @Suppress("DEPRECATION")
+                                    vibrator.vibrate(50)
+                                }
+                            }
+                        }
+                    }
+                }
+
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background

@@ -28,6 +28,9 @@ data class CommandData(
     @SerialName("image_mode")
     val imageMode: Int,
 
+    @SerialName("action_button_hold")
+    val actionButtonHold: Int,
+
     @SerialName("network_delay")
     val networkDelay: Int
 )
